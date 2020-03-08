@@ -37,8 +37,8 @@ messy.
 
 **6** (Optional) Run these commands to put album art and other metadata in the audio files:
 ```bash
-user@host:~/dockerized-spotify-downloader cd metadata && ./build.sh && cd ..
-user@host:~/dockerized-spotify-downloader/metadata$ ./metadata/start.sh
+user@host:~/dockerized-spotify-downloader$ cd metadata && ./build.sh && cd ..
+user@host:~/dockerized-spotify-downloader$ ./metadata/start.sh
 ```
 The working dir needs to contain the `volume` dir with the audio files in it.
 
