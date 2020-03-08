@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,6 +26,11 @@ type albumTrack struct {
 	track spotify.SimpleTrack
 }
 
+type dupCount struct {
+	at    []*albumTrack
+	count uint
+}
+
 type getImage struct {
 	image *[]byte
 }
@@ -45,7 +49,7 @@ func image(b *[]byte, fileName string) *flac.File {
 	return f
 }
 
-func info(clientID, clientSecret string, playlistID spotify.ID) (map[string]*albumTrack, error) {
+func info(clientID, clientSecret string, l *log.Logger, playlistID spotify.ID) (map[string]*albumTrack, error) {
 	config := &clientcredentials.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -67,7 +71,42 @@ func info(clientID, clientSecret string, playlistID spotify.ID) (map[string]*alb
 			track: track.Track.SimpleTrack,
 		}
 	}
-	log.Println(fmt.Sprintf("playlist has %d tracks", len(tracks.Tracks)))
+	l.Printf("playlist has %d tracks", len(tracks.Tracks))
+	duplicates := make(map[string]*dupCount, 0)
+	for _, at := range m {
+		name := at.track.Name
+		if _, ok := duplicates[name]; !ok {
+			duplicates[name] = &dupCount{
+				at:    make([]*albumTrack, 0),
+				count: 0,
+			}
+		}
+		duplicates[name].at = append(duplicates[name].at, at)
+		duplicates[name].count++
+	}
+	for k, v := range duplicates {
+		if v.count > 1 {
+			l.Printf("Song \"%s\" appears %d times.", k, v.count)
+			sameId := make(map[string]bool)
+			for _, at := range v.at {
+				id := at.track.ID.String()
+				if _, ok := sameId[id]; !ok {
+					sameId[id] = true
+					artists := ""
+					for _, artist := range at.track.Artists {
+						artists += ", " + artist.Name
+					}
+					artists = strings.Trim(artists, ", ")
+					artist := " (" + artists + ")"
+					newName := k + artist
+					at.track.Name = k + artist
+					l.Printf("One \"%s\" will be renamed \"%s\"", k, newName)
+				} else {
+					l.Printf("Same ID found more than once: %s", id)
+				}
+			}
+		}
+	}
 	return m, nil
 }
 
@@ -90,8 +129,8 @@ func main() {
 		l.Println("No files in: " + volume)
 		return
 	}
-	l.Println(fmt.Sprintf("have %d files", len(files)))
-	m, err := info(clientID, clientSecret, playlistID)
+	l.Printf("have %d files", len(files))
+	m, err := info(clientID, clientSecret, l, playlistID)
 	if err != nil {
 		panic(err)
 	}
@@ -100,10 +139,10 @@ func main() {
 		id := strings.Split(strings.Split(fileName, ".")[0], "/")[1]
 		at, ok := m[id]
 		if !ok {
-			l.Println(fmt.Sprintf("Couldn't find info for %s", fileName))
+			l.Printf("Couldn't find info for %s", fileName)
 			continue
 		}
-		newName := volume + at.track.Name + extension
+		newName := volume + strings.ReplaceAll(at.track.Name, "/", "") + extension
 		wg.Add(1)
 		go meta(at, fileName, l, newName, wg)
 	}
