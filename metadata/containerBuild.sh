@@ -1,0 +1,1 @@
+docker build -t spotflac:metadata -f Dockerfile .
