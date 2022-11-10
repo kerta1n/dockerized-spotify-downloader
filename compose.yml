@@ -11,8 +11,9 @@ services:
     container_name: argvmatey-spotify
     image: argvmatey-spotify
     environment:
-      - DEVICE_NAME
-      - PASSWORD
-      - USERNAME
+      - DEVICE_NAME=' '
+      - PASSWORD=' '
+      - USERNAME=' '
+    # mount your hard drive here
     volumes:
       - ./volume:/volume

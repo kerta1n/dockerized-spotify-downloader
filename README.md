@@ -13,8 +13,11 @@ Disclaimer: this is a guide only for technical people.
 * A Spotify premium account. (Free trial instructions below.)
 * Optional: Spotify API `Client ID` and `Client Secret` (for metadata).
 
+## Note
+* If you want to download multiple playlists, it is recommended to join them all into a single one for metadata tagging. You can create one by copy pasting all of your songs (like files in File Explorer) into a blank one, and use that playlist ID. Please scroll to the bottom of this page and read the Privacy section before getting started.
+
 ## Quick start
-**1** Edit the `start.sh` and `metadata/start.sh` files to set the environment variables.
+**1** Edit the `compose.yml` and `metadata/compose.yml` files to set the environment variables.
 
 **2** Run these commands to start the Spotify device:
 ```bash
@@ -26,10 +29,10 @@ block because there is an overlapping Docker network.
 ```bash
 user@host:~/dockerized-spotify-downloader ./start.sh
 ```
-You'll need to use `docker-compose down` to clean up before using the container again because the way it shuts down is
+You'll need to use `docker compose down` to clean up before using the container again because the way it shuts down is
 messy.
 
-**3** Make sure repeat is not on and start the playlist on the device whose name you set in `setup.sh`. 
+**3** Make sure repeat is not on and start the playlist on the device whose name you set in `setup.sh`.
 
 **4** Wait for the playlist to complete. If you started it in a web browser, you can close that now. (Other starting methods not tested.) The container will exit on playback stop.
 
@@ -42,18 +45,18 @@ user@host:~/dockerized-spotify-downloader$ ./metadata/start.sh
 ```
 The working dir needs to contain the `volume` dir with the audio files in it.
 
-**7** Grab the `.flac` files from the `~/dockerized-spotify-downloader/volume` directory. If you don't like `.flac` files, use [ffmpeg](https://www.ffmpeg.org/) to convert them.
+**7** Grab the `.flac` files from the `~/dockerized-spotify-downloader/volume` directory. If you don't like `.flac` files, use [ffmpeg](https://www.ffmpeg.org/) to convert them. (Spotify's orginal format is in OGG, but keep in mind you can convert them https://opensource.com/article/17/6/ffmpeg-convert-media-file-formats [section 'Selecting your Codecs'])
 
 ## Environment variables
-`start.sh`:
-* `export DEVICE_NAME=` The name you want the Spotify device to be.
-* `export PASSWORD=` Your Spotify premium account password.
-* `export USERNAME=` Your Spotify premium account username. This is different from your display name. Find it in your `Account overview`.
+`compose.yml`:
+* `DEVICE_NAME=` The name you want the Spotify device to be.
+* `PASSWORD=` Your Spotify premium account password.
+* `USERNAME=` Your Spotify premium account username. This is different from your display name. Find it in your `Account overview`.
 
-`metadata/start.sh`
-* `export PLAYLIST_ID=` The playlist ID. You can find this in the URL link to the playlist.
-* `export SPOTIFY_ID=` Your Spotify developer `Client ID`.
-* `export SPOTIFY_SECRET=` Your Spotify developer `Client Secret`.
+`metadata/compose.yml`
+* `PLAYLIST_ID=` The playlist ID. You can find this in the URL link to the playlist.
+* `SPOTIFY_ID=` Your Spotify developer `Client ID`. Obtain from Spotify Developer dashboard.
+* `SPOTIFY_SECRET=` Your Spotify developer `Client Secret`. Obtain from Spotify Developer dashboard.
 
 ## Getting a free Spotify premium trial
 Clear all your cookies or use a private browser. Sign up for a Spotify account using a new disassociated email. After
@@ -77,4 +80,4 @@ reputable paid VPN service, follow best web browser privacy practices, and don't
 back to you. If you want a playlist, it may be best to recreate the playlist in the new disassociated account, with some
 different songs and split into multiple playlists. This project is for private use only. Be wary of sharing any
 downloaded songs, it's trivial for Spotify to add near invisible and unique trackers to every song determine where any
-song came from.
+song came from. https://www.linuxserver.io/blog/routing-docker-host-and-container-traffic-through-wireguard#routing-docker-container-traffic-through-wireguard 

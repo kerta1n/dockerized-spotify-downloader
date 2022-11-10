@@ -1,0 +1,18 @@
+version: '3'
+services:
+  metadata:
+    container_name: metadata
+    # this should be the same directory that you mounted previously.
+    volumes:
+      - ../volume:/go/src/metadata/volume
+    image: spotflac:metadata
+    # playlist id should be obtained by sharing your playlist via link, and copying the string like this
+    #                                   v--------------------v
+    # https://open.spotify.com/playlist/37i9dQZF1DX4dyzvuaRJ0n?si=c322ac71cab8466b
+    #                                   ^--------------------^
+    # spotify id and secret are obtained from the spotify developer dashboard. you will need to make an app as well.
+    # https://developer.spotify.com/dashboard/
+    environment:
+      - PLAYLIST_ID=' '
+      - SPOTIFY_ID=' '
+      - SPOTIFY_SECRET=' '
