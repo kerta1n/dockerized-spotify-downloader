@@ -1,3 +1,0 @@
-echo $PLAYER_EVENT > PLAYER_EVENT
-echo $TRACK_ID > TRACK_ID
-kill -s USR1 `pgrep argvMatey`
