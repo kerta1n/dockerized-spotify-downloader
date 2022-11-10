@@ -1,0 +1,9 @@
+
+version: '3'
+services:
+  metadata:
+    container_name: metadata
+    volumes:
+      - ../volume:/go/src/metadata/volume
+    image: metadata:latest
+
